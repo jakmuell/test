@@ -1,5 +1,5 @@
 
-name: Daily Updates
+name: Test
 
 on:
   workflow_dispatch:
@@ -22,7 +22,7 @@ jobs:
           python-version: '3.12'
         
       - name: Get Dependencies
-        uses: ylemkimon/cache-restore@v2
+        uses: actions/cache-restore@v2
         with:
             path: ~/.cache/pip
             key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
