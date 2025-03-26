@@ -1,0 +1,35 @@
+
+name: Daily Updates
+
+on:
+  schedule:
+    - cron: '0 5 * * *'   # Every day at 05:00 UTC
+    - cron: '0 12 * * *'  # Every day at 12:00 UTC
+    - cron: '0 17 * * *'  # Every day at 17:00 UTC
+    - cron: '0 23 * * *'  # Every day at 23:00 UTC
+  workflow_dispatch:
+
+    
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure Git for PAT
+        run: |
+          git config --global url."https://${{ secrets.PAT_TOKEN }}:x-oauth-basic@github.com/".insteadOf "https://github.com/"
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+        
+      - name: Get Dependencies
+        uses: ylemkimon/cache-restore@v2
+        with:
+            path: ~/.cache/pip
+            key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+            restore-keys: |
+            ${{ runner.os }}-pip-
