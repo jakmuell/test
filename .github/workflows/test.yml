@@ -23,13 +23,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Install Dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Save Python Environment
+      - name: Create and Activate Virtual Environment
         run: |
           python -m venv ${{ github.workspace }}/.venv
+          source ${{ github.workspace }}/.venv/bin/activate
+        shell: bash
+
+      - name: Install Dependencies in Virtual Environment
+        run: |
           source ${{ github.workspace }}/.venv/bin/activate
           pip install -r requirements.txt
         shell: bash
