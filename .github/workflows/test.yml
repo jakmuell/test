@@ -1,75 +1,50 @@
-name: Test
+name: Python CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
 
 jobs:
-  setup:
+  install:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-        
-      - name: Cache pip
+
+      - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
 
-      - name: Create and Activate Virtual Environment
+      - name: Install dependencies
         run: |
-          python -m venv ${{ github.workspace }}/.venv
-          source ${{ github.workspace }}/.venv/bin/activate
-        shell: bash
-
-      - name: Install Dependencies in Virtual Environment
-        run: |
-          source ${{ github.workspace }}/.venv/bin/activate
+          python -m pip install --upgrade pip
           pip install -r requirements.txt
-        shell: bash
 
-      - name: Verify Virtual Environment
-        run: ls -la ${{ github.workspace }}/.venv
-
-      - name: Print Pandas Location
-        run: |
-          source ${{ github.workspace }}/.venv/bin/activate
-          python -c "import pandas; print(pandas.__file__)"
-        shell: bash
-
-      - name: Upload Python Environment
-        uses: actions/upload-artifact@v4
-        with:
-          name: python-env
-          path: ${{ github.workspace }}/.venv
-
-  actual_job:
+  test:
+    needs: install
     runs-on: ubuntu-latest
-    needs: setup
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Download Python Environment
-        uses: actions/download-artifact@v4
+      - name: Restore dependencies from cache
+        uses: actions/cache@v3
         with:
-          name: python-env
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
 
-      - name: Activate Python Environment
-        run: |
-          source ${{ github.workspace }}/.venv/bin/activate
-          python -c "import pandas; print(pandas.__file__)"
-          pip list
-        shell: bash
+      - name: Print installed packages
+        run: pip list
