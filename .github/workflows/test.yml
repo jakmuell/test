@@ -29,19 +29,19 @@ jobs:
 
       - name: Save Python Environment
         run: |
-          python -m venv .venv
-          source .venv/bin/activate
+          python -m venv ${{ github.workspace }}/.venv
+          source ${{ github.workspace }}/.venv/bin/activate
           pip install -r requirements.txt
         shell: bash
-      
+
       - name: Verify Virtual Environment
-        run: ls -la .venv
+        run: ls -la ${{ github.workspace }}/.venv
 
       - name: Upload Python Environment
         uses: actions/upload-artifact@v4
         with:
           name: python-env
-          path: .venv
+          path: ${{ github.workspace }}/.venv
 
   actual_job:
     runs-on: ubuntu-latest
@@ -62,6 +62,6 @@ jobs:
 
       - name: Activate Python Environment
         run: |
-          source .venv/bin/activate
+          source ${{ github.workspace }}/.venv/bin/activate
           pip list
         shell: bash
