@@ -38,6 +38,12 @@ jobs:
       - name: Verify Virtual Environment
         run: ls -la ${{ github.workspace }}/.venv
 
+      - name: Print Pandas Location
+        run: |
+          source ${{ github.workspace }}/.venv/bin/activate
+          python -c "import pandas; print(pandas.__file__)"
+        shell: bash
+
       - name: Upload Python Environment
         uses: actions/upload-artifact@v4
         with:
@@ -64,5 +70,6 @@ jobs:
       - name: Activate Python Environment
         run: |
           source ${{ github.workspace }}/.venv/bin/activate
+          python -c "import pandas; print(pandas.__file__)"
           pip list
         shell: bash
