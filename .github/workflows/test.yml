@@ -18,14 +18,14 @@ jobs:
       - name: Create and Activate Virtual Environment
         run: |
           python -m venv ${{ github.workspace }}/.venv
-          source .venv/bin/activate
+          source ${{ github.workspace }}/.venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
         shell: bash
 
       - name: Verify Installed Packages
         run: |
-          source .venv/bin/activate
+          source ${{ github.workspace }}/.venv/bin/activate
           pip list
         shell: bash
 
@@ -33,8 +33,11 @@ jobs:
       - name: Debug Current Directory
         run: pwd
 
-      - name: List Files
+      - name: List Files in Workspace
         run: ls -la ${{ github.workspace }}
+
+      - name: Verify Virtual Environment Directory
+        run: ls -la ${{ github.workspace }}/.venv
 
       - name: Upload Virtual Environment
         uses: actions/upload-artifact@v4
@@ -61,6 +64,6 @@ jobs:
 
       - name: Activate Virtual Environment and Verify Packages
         run: |
-          source .venv/bin/activate
+          source ${{ github.workspace }}/.venv/bin/activate
           pip list
         shell: bash
