@@ -17,7 +17,7 @@ jobs:
 
       - name: Create and Activate Virtual Environment
         run: |
-          python -m venv .venv
+          python -m venv ${{ github.workspace }}/.venv
           source .venv/bin/activate
           pip install --upgrade pip
           pip install -r requirements.txt
@@ -29,11 +29,18 @@ jobs:
           pip list
         shell: bash
 
+      # Debugging Steps
+      - name: Debug Current Directory
+        run: pwd
+
+      - name: List Files
+        run: ls -la ${{ github.workspace }}
+
       - name: Upload Virtual Environment
         uses: actions/upload-artifact@v4
         with:
           name: python-env
-          path: .venv
+          path: ${{ github.workspace }}/.venv
 
   reuse:
     runs-on: ubuntu-latest
